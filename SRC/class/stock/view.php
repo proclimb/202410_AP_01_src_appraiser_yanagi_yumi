@@ -2,7 +2,7 @@
 //
 //仕入管理画面
 //
-function subStockView($param)
+function subStockView($param) // 仕入管理の実際の画面表示
 {
 ?>
 	<script>
@@ -18,12 +18,16 @@ function subStockView($param)
 		<input type="hidden" name="act" value="stockSearch" />
 		<input type="hidden" name="orderBy" value="<?php print $param["orderBy"] ?>" />
 		<input type="hidden" name="orderTo" value="<?php print $param["orderTo"] ?>" />
+		<!-- "hidden"今は見えない状態 -->
 		<input type="hidden" name="sPage" value="<?php print $param["sPage"] ?>" />
 		<input type="hidden" name="stockNo" />
+		<!--送る時は空で送る -->
 		<input type="hidden" name="delStockList" />
 
 		<a href="javascript:form.act.value='stockEdit';form.submit();"><img src="./images/btn_enter.png"></a>
-
+		<!--ボタンを押した時こういう動作をします -->
+		<!--submitする時はindex.phpに飛ぶ 　indexで共通情報を作り、bodyで個別ページの情報を作る-->
+		<!--新規登録ボタンを作る -->
 		<div class="search">
 			<table border="0" cellpadding="2" cellspacing="0">
 				<tr>
@@ -40,7 +44,8 @@ function subStockView($param)
 					<th>距離</th>
 					<td>
 						<?php
-						for ($i = 0; $i < 27; $i++) {
+						//						for ($i = 0; $i < 27; $i++) {   距離のチェックボックスの数が多いのを修正
+						for ($i = 0; $i < 4; $i++) {
 						?>
 							<input type="checkbox" name="sDistance[]" value="<?php print $i + 1; ?>" <?php for ($j = 0; $j < 4; $j++) {
 																											if ($param["sDistance"][$j] == $i + 1) print ' checked="checked"';
@@ -60,7 +65,7 @@ function subStockView($param)
 					<th>ランク</th>
 					<td>
 						<?php
-						for ($i = 0; $i < 27; $i++) {
+						for ($i = 0; $i < 5; $i++) {
 						?>
 							<input type="checkbox" name="sRank[]" value="<?php print $i + 1; ?>" <?php for ($j = 0; $j < 5; $j++) {
 																										if ($param["sRank"][$j] == $i + 1) print ' checked="checked"';
@@ -111,7 +116,7 @@ function subStockView($param)
 		</div>
 
 		<input type="image" src="./images/btn_search.png" onclick="form.act.value='stockEditComplete';form.submit();" />
-
+		<!-- ボタンサーチで検索のボタンを作る-->
 		<hr />
 
 		<?php
@@ -206,7 +211,7 @@ function subStockView($param)
 function subStockEditView($param)
 {
 
-?>
+?><!-- スクリプトを追加します　index共通　拡張する場合はここで選別する-->
 	<script type="text/javascript" src="./js/stock.js"></script>
 	<script type="text/javascript" src="./js/jquery-1.4.min.js"></script>
 	<script type="text/javascript" src="./js/auto_ruby.js"></script>
@@ -215,6 +220,7 @@ function subStockEditView($param)
 	</script>
 
 	<h1>仕入<?php print $param["purpose"] ?></h1>
+	<!--purposeに「登録」が入っていると「仕入登録」とタイトル表示される -->
 
 	<form name="form" id="form" action="index.php" method="get">
 		<input type="hidden" name="act" />
@@ -339,7 +345,10 @@ function subStockEditView($param)
 
 		</table>
 
-		<a href="javascript:fnStockEditCheck();"><img src="./images/<?php print $param["btnImage"] ?>" /></a>　
+		<a href="javascript:;"><img src="./images/<?php print $param["btnImage"] ?>" /></a>
+		<!--btn_entr.pngが入る -->
+		<!--ポップアップが出る　よろしいですか？ -->
+		<!-- fnStockEditCheck()-->
 		<a href="javascript:form.act.value='stockEditComplete';form.submit();"><img src="./images/btn_return.png" /></a>
 		<?php
 		if ($param["stockNo"]) {
