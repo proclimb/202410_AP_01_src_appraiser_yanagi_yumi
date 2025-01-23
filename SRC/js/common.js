@@ -8,7 +8,7 @@ function fnYMDCheck(msg, obj) {
 	// 未入力時はチェックしない
 	oYMD = obj.value;
 	// 2025.01.22 「仕入登録」不具合により追加
-	if (!oYMD) {]
+	if (!oYMD) {
 		return true;
 	}
 
