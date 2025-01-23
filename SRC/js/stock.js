@@ -1,95 +1,103 @@
 //
 //仕入管理チェック
 //
-function fnStockEditCheck(){
+function fnStockEditCheck() {
 	tmp = form.charge.value;
-	if(tmp.length > 100){
+	if (tmp.length > 100) {
 		alert('担当は100文字以内で入力してください');
 		return;
 	}
 
 	tmp = form.article.value;
-	if(tmp.length == 0){
+	// 2025.01.23 物件名に半角スペースのみを登録すると、検索結果のリンクが表示されない不具合を修正
+	// if (tmp.length == 0) {
+	if (tmp.length == 0 || !tmp.trim()) {
 		alert('物件名を入力してください');
 		return;
 	}
-	if(tmp.length > 100){
+	if (tmp.length > 100) {
 		alert('物件名は100文字以内で入力してください');
 		return;
 	}
 
 	tmp = form.articleFuri.value;
-	if(tmp.length > 100){
+	if (tmp.length > 100) {
 		alert('物件名（よみ）は100文字以内で入力してください');
 		return;
 	}
 
 	tmp = form.room.value;
-	if(tmp.length > 100){
+	if (tmp.length > 100) {
 		alert('部屋は100文字以内で入力してください');
 		return;
 	}
 
 	tmp = form.area.value;
-	if(tmp.length > 6 || tmp.match(/[^0-9\.]+/)){
+	// 2025.01.22 面積の入力チェックでエラーメッセージが現れない不具合を修正
+	// if(tmp.length > 6 || tmp.match(/[^0-9\.]+/)){
+	// ↑文字列の長さが6文字以上もしくは半角数字のみのチェック
+	if (tmp.length > 0 && !tmp.match(/^([1-9][0-9]{0,2}|0)(\.[0-9][0-9]|\.[0-9])?$/)) {
 		alert('面積は3桁以内（小数点以下2桁以内）の半角数字で入力してください');
 		return;
 	}
 
 	tmp = form.station.value;
-	if(tmp.length > 100){
+	if (tmp.length > 100) {
 		alert('最寄駅は100文字以内で入力してください');
 		return;
 	}
 
 	tmp = form.agent.value;
-	if(tmp.length > 100){
+	if (tmp.length > 100) {
 		alert('業者名は100文字以内で入力してください');
 		return;
 	}
 
 	tmp = form.store.value;
-	if(tmp.length > 100){
+	if (tmp.length > 100) {
 		alert('店舗名は100文字以内で入力してください');
 		return;
 	}
 
 	tmp = form.cover.value;
-	if(tmp.length > 100){
+	if (tmp.length > 100) {
 		alert('担当者は100文字以内で入力してください');
 		return;
 	}
 
-	if( !fnYMDCheck( "正しい内見日付", form.visitDT ) ) { return; }
+	if (!fnYMDCheck("正しい内見日付", form.visitDT)) { return; }
 
 	tmp = form.deskPrice.value;
-	if(tmp.length > 5 || tmp.match(/[^0-9]+/)){
+	if (tmp.length > 5 || tmp.match(/[^0-9]+/)) {
 		alert('机上金額は5桁以内の半角数字で入力してください');
 		return;
 	}
 
 	tmp = form.vendorPrice.value;
-	if(tmp.length > 5 || tmp.match(/[^0-9]+/)){
+	if (tmp.length > 5 || tmp.match(/[^0-9]+/)) {
 		alert('売主希望金額は5桁以内の半角数字で入力してください');
 		return;
 	}
 
 	tmp = form.note.value;
-	if(tmp.length > 1000){
+	if (tmp.length > 1000) {
 		alert('備考は1000文字以内で入力してください');
 		return;
 	}
 
-	if(confirm('この内容で登録します。よろしいですか？')){
+	if (confirm('この内容で登録します。よろしいですか？')) {
+		// OKを押したら実行、キャンセルを押したら戻る
 		form.act.value = 'stockEditComplete';
+		// 値に代入してsubmitできる
 		form.submit();
+		// 値を入れた状態でsubmitする　GET形式でindex.phpに飛ばす　その際$GETで送ると同時に$REQUEST変数にコピーされる
 	}
 }
 
 
 
-function fnStockDeleteCheck(no){
-	if(confirm('削除します。よろしいですか？')){
+function fnStockDeleteCheck(no) {
+	if (confirm('削除します。よろしいですか？')) {
 		form.stockNo.value = no;
 		form.act.value = 'stockDelete';
 		form.submit();
@@ -101,7 +109,7 @@ function fnStockDeleteCheck(no){
 //
 //仕入管理一括削除用チェックボックス全選択
 //
-function fnStockListDeleteAllCheck(){
+function fnStockListDeleteAllCheck() {
 	if (!document.form.delStock) {
 		// 検索結果が0件の場合は何もしない
 		return;
@@ -109,7 +117,7 @@ function fnStockListDeleteAllCheck(){
 
 	if (document.form.delStock.length) {
 		// 検索結果が複数レコードの場合
-		for(count = 0; count < document.form.delStock.length; count++){
+		for (count = 0; count < document.form.delStock.length; count++) {
 			document.form.delStock[count].checked = document.form.delStockAll.checked;
 		}
 	} else {
@@ -123,7 +131,7 @@ function fnStockListDeleteAllCheck(){
 //
 // 仕入管理一括削除
 //
-function fnStockListDeleteCheck(){
+function fnStockListDeleteCheck() {
 	// 削除対象のStockNo受け渡し用
 	var stockList = "";
 
@@ -131,8 +139,8 @@ function fnStockListDeleteCheck(){
 
 	if (document.form.delStock.length) {
 		// 検索結果が複数レコードの場合
-		for(count = 0; count < document.form.delStock.length; count++){
-			if(document.form.delStock[count].checked) {
+		for (count = 0; count < document.form.delStock.length; count++) {
+			if (document.form.delStock[count].checked) {
 				// 複数件選択されている場合には「,」で区切る
 				if (stockList != "") {
 					stockList += ",";
@@ -152,7 +160,7 @@ function fnStockListDeleteCheck(){
 		return;
 	}
 
-	if(confirm('削除します。よろしいですか？')){
+	if (confirm('削除します。よろしいですか？')) {
 		form.delStockList.value = stockList;
 		form.act.value = 'stockListDelete';
 		form.submit();

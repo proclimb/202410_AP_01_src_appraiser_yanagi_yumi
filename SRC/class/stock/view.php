@@ -114,8 +114,9 @@ function subStockView($param) // 仕入管理の実際の画面表示
 				</tr>
 			</table>
 		</div>
-
-		<input type="image" src="./images/btn_search.png" onclick="form.act.value='stockEditComplete';form.submit();" />
+		<!-- 2025.01.23 仕入管理一覧画面で検索ボタンを押すと検索されず空のレコードがDBに登録される不具合を修正 -->
+		<!-- 検索ボタンは'stockEditComplete' -> 'stockSearch'で良い-->
+		<input type="image" src="./images/btn_search.png" onclick="form.act.value='stockSearch';form.submit();" />
 		<!-- ボタンサーチで検索のボタンを作る-->
 		<hr />
 
@@ -124,11 +125,15 @@ function subStockView($param) // 仕入管理の実際の画面表示
 			return;
 		}
 
-		$sql = fnSqlStockList(1, $param);
+		// 2025.01.23 検索結果の総数が「1件」で固定表示されている不具合を修正
+		// ２ページ目以降、ページャーの表示がおかしくなるを修正
+		//$sql = fnSqlStockList(1, $param); 「1」は、検索結果の 一覧を表示する為の各項目の値を取得する 為のSQLを作成
+		$sql = fnSqlStockList(0, $param);
+		// 「0」は、検索結果の 検索結果数を取得する為のSQLを作成
 		$res = mysqli_query($param["conn"], $sql);
 		$row = mysqli_fetch_array($res);
 
-		$count = $row[0];
+		$count = $row[0]; //$count に検索結果の総数を設定
 
 		$sPage = fnPage($count, $param["sPage"], 'stockSearch');
 		?>
@@ -157,23 +162,24 @@ function subStockView($param) // 仕入管理の実際の画面表示
 				$res  = mysqli_query($param["conn"], $sql);
 				$i = 0;
 				while ($row = mysqli_fetch_array($res)) {
-					$stockNo     = htmlspecialchars($row[1]);
-					$charge      = htmlspecialchars($row[2]);
-					$rank        = fnRankName(htmlspecialchars($row[3] - 1));
-					$insDT       = htmlspecialchars($row[4]);
-					$article     = htmlspecialchars($row[5]);
-					$articleFuri = htmlspecialchars($row[6]);
-					$room        = htmlspecialchars($row[7]);
-					$area        = htmlspecialchars($row[8]);
-					$station     = htmlspecialchars($row[9]);
-					$distance    = fnRankName(htmlspecialchars($row[10] - 1));
-					$agent       = htmlspecialchars($row[11]);
-					$store       = htmlspecialchars($row[12]);
-					$cover       = htmlspecialchars($row[13]);
-					$visitDT     = htmlspecialchars($row[14]);
-					$deskPrice   = htmlspecialchars(fnNumFormat($row[15]));
-					$vendorPrice = htmlspecialchars(fnNumFormat($row[16]));
-					$note        = htmlspecialchars($row[17]);
+					// 2025.01.23 検索結果一覧の項目と登録されているデータの項目が１個ずつズレている不具合を修正
+					$stockNo     = htmlspecialchars($row[0]);
+					$charge      = htmlspecialchars($row[1]);
+					$rank        = fnRankName(htmlspecialchars($row[2] - 1));
+					$insDT       = htmlspecialchars($row[3]);
+					$article     = htmlspecialchars($row[4]);
+					$articleFuri = htmlspecialchars($row[5]);
+					$room        = htmlspecialchars($row[6]);
+					$area        = htmlspecialchars($row[7]);
+					$station     = htmlspecialchars($row[8]);
+					$distance    = fnRankName(htmlspecialchars($row[9] - 1));
+					$agent       = htmlspecialchars($row[10]);
+					$store       = htmlspecialchars($row[11]);
+					$cover       = htmlspecialchars($row[12]);
+					$visitDT     = htmlspecialchars($row[13]);
+					$deskPrice   = htmlspecialchars(fnNumFormat($row[14]));
+					$vendorPrice = htmlspecialchars(fnNumFormat($row[15]));
+					$note        = htmlspecialchars($row[16]);
 				?>
 					<tr>
 						<td class="list_td<?php print $i; ?>"><?php print $charge; ?></td>
@@ -222,6 +228,7 @@ function subStockEditView($param)
 	<h1>仕入<?php print $param["purpose"] ?></h1>
 	<!--purposeに「登録」が入っていると「仕入登録」とタイトル表示される -->
 
+	<!--2025.01.23 get -> post　に修正 仕入登録画面で備考欄に1000文字入れて登録しようとするとサーバーエラーになる不具合修正のため-->
 	<form name="form" id="form" action="index.php" method="get">
 		<input type="hidden" name="act" />
 		<input type="hidden" name="sDel" value="<?php print $param["sDel"] ?>" />
@@ -260,6 +267,7 @@ function subStockEditView($param)
 			<tr>
 				<th>ランク</th>
 				<td>
+					<!-- 2025.01.23 仕入更新画面の「ランク」で登録しているデータと異なる値が表示される不具合を修正-->
 					<?php
 					if (!$param["stockNo"]) {
 						$param["rank"] = 1;
@@ -303,10 +311,20 @@ function subStockEditView($param)
 				<th>距離</th>
 				<td>
 					<?php
+					if (!$param["stockNo"]) {
+						$param["distance"] = 1;
+					}
 					for ($i = 0; $i < 4; $i++) {
+						$check = '';
+						if (($param["distance"] - 1) == $i) {
+							$check = 'checked = "checked"';
+						}
 					?>
 						<!-- 2025.01.21 初期値の表示 -->
-						<input type="radio" name="distance" value="<?php print $i + 1; ?>" <?php if ($param["distance"] == $i) print ' checked="checked"'; ?> /> <?php print fnDistanceName($i); ?>
+						<!--2025.01.23 仕入更新画面の「距離」で登録しているデータと異なる値が表示される不具合を修正 -->
+						<!-- 修正前：<input type="radio" name="distance" value="<?php print $i + 1; ?>" <?php if ($param["distance"] == $i) print ' checked="checked"'; ?> /> <?php print fnDistanceName($i); ?> -->
+						<!-- for文の変数$iは0から始まり、DBに登録する値は1から始まるため、両変数の値を一致させるには変数$iの値を+1する必要がある。 -->
+						<input type="radio" name="distance" value="<?php print $i + 1; ?>" <?php print $check; ?> /> <?php print fnDistanceName($i); ?>
 					<?php
 					}
 					?>
@@ -344,11 +362,21 @@ function subStockEditView($param)
 				<th>仕入経緯</th>
 				<td>
 					<?php
+					// 2025.01.23「仕入経緯」で登録しているデータと異なる値が表示される不具合を修正
+					if (!$param["stockNo"]) {
+						$param["how"] = 1;
+					}
 					for ($i = 0; $i < 6; $i++) {
+						// 2025.01.23
+						$check = '';
+						if (($param["how"] - 1) == $i) {
+							$check = 'checked = "checked"';
+						}
 					?>
 						<br />
 						<!--2025.01.21 初期値設定 -->
-						<input type="radio" name="how" value="<?php print $i + 1; ?>" <?php if ($param["how"] == $i) print ' checked="checked"'; ?> /> <?php print fnHowName($i); ?>
+						<!-- <input type="radio" name="how" value="<?php print $i + 1; ?>" <?php if ($param["how"] == $i) print ' checked="checked"'; ?> /> <?php print fnHowName($i); ?> -->
+						<input type="radio" name="how" value="<?php print $i + 1; ?>" <?php print $check; ?> /> <?php print fnHowName($i); ?>
 					<?php
 					}
 					?>
@@ -357,11 +385,14 @@ function subStockEditView($param)
 
 		</table>
 
-		<a href="javascript:;"><img src="./images/<?php print $param["btnImage"] ?>" /></a>
+		<a href="javascript:fnStockEditCheck();"><img src="./images/<?php print $param["btnImage"] ?>" /></a>
 		<!--btn_entr.pngが入る -->
 		<!--ポップアップが出る　よろしいですか？ -->
 		<!-- fnStockEditCheck()-->
-		<a href="javascript:form.act.value='stockEditComplete';form.submit();"><img src="./images/btn_return.png" /></a>
+		<!--2025.01.23 更新画面にて戻るボタンをクリックすると検索一覧から表示されなくなる不具合を修正-->
+		<!-- <a href="javascript:form.act.value='stockEditComplete';form.submit();"><img src="./images/btn_return.png" /></a> -->
+		<a href="javascript:form.act.value='stockSearch';form.submit();"><img src="./images/btn_return.png" /></a>
+		<!-- 'stockSearch'を呼ぶと仕入管理一覧画面へ -->
 		<?php
 		if ($param["stockNo"]) {
 		?>

@@ -88,11 +88,13 @@ function fnNextNo($t)
 {
     $conn = fnDbConnect();
 
-    $sql = "SELECT MAX(".$t."NO) FROM TBL".$t;
+    $sql = "SELECT MAX(" . $t . "NO) FROM TBL" . $t;
     $res = mysqli_query($conn, $sql);
     $row = mysqli_fetch_array($res);
     if ($row[0]) {
-        $max = $row[0];
+        // 2025.01.23 検索結果から詳細を確認する際に同一データしか表示がされない不具合を修正
+        // 更新画面で更新ボタンを押下すると、変更が登録データーすべてに更新される不具合を修正
+        $max = $row[0] + 1;
     } else {
         $max = 1;
     }

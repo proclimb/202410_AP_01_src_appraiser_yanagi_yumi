@@ -69,6 +69,7 @@ function subStockEdit()
     }
 
     subMenu();
+    // メニュー画面を出す
     subStockEditView($param);
 }
 
@@ -172,10 +173,10 @@ function subStockListDelete()
 //
 function getStockParam()
 {
-    $param = array();
+    $param = array(); // 配列作成
 
     // DB接続
-    $param["conn"] = fnDbConnect();
+    $param["conn"] = fnDbConnect(); // 接続情報をconnの中に入れる
 
     // 検索情報
     $param["sDel"] = htmlspecialchars($_REQUEST['sDel']);
