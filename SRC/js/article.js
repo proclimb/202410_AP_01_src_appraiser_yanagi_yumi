@@ -3,14 +3,19 @@
 //
 function fnArticleEditCheck() {
 	tmp = form.article.value;
-	if (tmp) {
+	// 2025.01.28 物件名を入力するとエラーメッセージが表示される不具合を修正
+	// if (tmp) {
+	if (tmp.length == 0) {
 		alert('物件名を入力してください');
 		return;
 	}
 	if (isLength(100, "物件名", form.article)) { return; }
 
-	form.act.value = 'articleEditComplete';
-	form.submit();
+	// 2025.01.28　新規登録、更新時に確認メッセージが表示されずに登録される不具合を修正
+	if (confirm('この内容で登録します。よろしいですか？')) {
+		form.act.value = 'articleEditComplete';
+		form.submit();
+	}
 }
 
 
