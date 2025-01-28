@@ -260,7 +260,9 @@ function subArticleEdit()
 		</table>
 
 		<a href="javascript:fnArticleEditCheck();"><img src="./images/<?php print $btnImage ?>" /></a>　
-		<a href="javascript:form.act.value='fManager';form.submit();"><img src="./images/btn_return.png" /></a>
+		<!--2025.01.28 新規登録・更新画面で戻るボタンを押下するとファイルマネージャー画面に遷移する不具合を修正  -->
+		<!-- <a href="javascript:form.act.value='fManager';form.submit();"><img src="./images/btn_return.png" /></a> -->
+		<a href="javascript:form.act.value='articleSearch';form.submit();"><img src="./images/btn_return.png" /></a>
 		&nbsp;&nbsp;<a href="javascript:fnArticleDeleteCheck(<?php print $articleNo ?>);"><img src="./images/btn_del.png" /></a>
 	</form>
 <?php
