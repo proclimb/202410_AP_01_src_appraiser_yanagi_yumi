@@ -116,7 +116,8 @@ function subStockView($param) // 仕入管理の実際の画面表示
 		</div>
 		<!-- 2025.01.23 仕入管理一覧画面で検索ボタンを押すと検索されず空のレコードがDBに登録される不具合を修正 -->
 		<!-- 検索ボタンは'stockEditComplete' -> 'stockSearch'で良い-->
-		<input type="image" src="./images/btn_search.png" onclick="form.act.value='stockSearch';form.submit();" />
+		<!-- <input type="image" src="./images/btn_search.png" onclick="form.act.value='stockSearch';form.submit();" /> -->
+		<input type="image" src="./images/btn_search.png" onclick="form.act.value='stockSearch';form.sPage.value=1;form.submit();" />
 		<!-- ボタンサーチで検索のボタンを作る-->
 		<hr />
 
@@ -135,14 +136,18 @@ function subStockView($param) // 仕入管理の実際の画面表示
 
 		$count = $row[0]; //$count に検索結果の総数を設定
 
-		$sPage = fnPage($count, $param["sPage"], 'stockSearch');
+		// 2025.01.27 検索結果の2ページ目以降を表示した状態で、新しい条件を検索すると検索結果が正しく表示されない
+		// $sPage = fnPage($count, $param["sPage"], 'stockSearch');
+		$param["sPage"] = fnPage($count, $param["sPage"], 'stockSearch');
 		?>
 
 		<div class="list">
 			<table border="0" cellpadding="5" cellspacing="1">
 				<tr>
 					<th class="list_head">担当<?php fnOrder('CHARGE', 'stockSearch') ?></th>
-					<th class="list_head">ランク<?php fnOrder('RANK', 'stockSearch') ?></th>
+					<!-- 2025.01.27 仕入管理一覧での検索結果から、ランクでソートできない不具合を修正 -->
+					<!-- <th class="list_head">ランク<?php fnOrder('RANK', 'stockSearch') ?></th> ->
+					<th class="list_head">ランク<?php fnOrder('`RANK`', 'stockSearch') ?></th>
 					<th class="list_head">日付<?php fnOrder('INSDT', 'stockSearch') ?></th>
 					<th class="list_head">物件名<?php fnOrder('ARTICLE', 'stockSearch') ?></th>
 					<th class="list_head">部屋<?php fnOrder('ROOM', 'stockSearch') ?></th>
@@ -218,190 +223,202 @@ function subStockEditView($param)
 {
 
 ?><!-- スクリプトを追加します　index共通　拡張する場合はここで選別する-->
-	<script type="text/javascript" src="./js/stock.js"></script>
-	<script type="text/javascript" src="./js/jquery-1.4.min.js"></script>
-	<script type="text/javascript" src="./js/auto_ruby.js"></script>
-	<script>
-		var cal1 = new JKL.Calendar("cal1", "form", "visitDT");
-	</script>
+					<script type="text/javascript" src="./js/stock.js"></script>
+					<script type="text/javascript" src="./js/jquery-1.4.min.js"></script>
+					<script type="text/javascript" src="./js/auto_ruby.js"></script>
+					<script>
+						var cal1 = new JKL.Calendar("cal1", "form", "visitDT");
+					</script>
 
-	<h1>仕入<?php print $param["purpose"] ?></h1>
-	<!--purposeに「登録」が入っていると「仕入登録」とタイトル表示される -->
+					<h1>仕入<?php print $param["purpose"] ?></h1>
+					<!--purposeに「登録」が入っていると「仕入登録」とタイトル表示される -->
 
-	<!--2025.01.23 get -> post　に修正 仕入登録画面で備考欄に1000文字入れて登録しようとするとサーバーエラーになる不具合修正のため-->
-	<form name="form" id="form" action="index.php" method="get">
-		<input type="hidden" name="act" />
-		<input type="hidden" name="sDel" value="<?php print $param["sDel"] ?>" />
-		<input type="hidden" name="sInsDTFrom" value="<?php print $param["sInsDTFrom"] ?>" />
-		<input type="hidden" name="sInsDTTo" value="<?php print $param["sInsDTTo"] ?>" />
-		<input type="hidden" name="sCharge" value="<?php print $param["sCharge"] ?>" />
-		<input type="hidden" name="sRank" value="<?php print $param["sRank"] ?>" />
-		<input type="hidden" name="sArticle" value="<?php print $param["sArticle"] ?>" />
-		<input type="hidden" name="sArticleFuri" value="<?php print $param["sArticleFuri"] ?>" />
-		<input type="hidden" name="sAreaFrom" value="<?php print $param["sAreaFrom"] ?>" />
-		<input type="hidden" name="sAreaTo" value="<?php print $param["sAreaTo"] ?>" />
-		<input type="hidden" name="sStation" value="<?php print $param["sStation"] ?>" />
-		<input type="hidden" name="sDistance" value="<?php print $param["sDistance"] ?>" />
-		<input type="hidden" name="sAgent" value="<?php print $param["sAgent"] ?>" />
-		<input type="hidden" name="sStore" value="<?php print $param["sStore"] ?>" />
-		<input type="hidden" name="sCover" value="<?php print $param["sCover"] ?>" />
-		<input type="hidden" name="sVisitDTFrom" value="<?php print $param["sVisitDTFrom"] ?>" />
-		<input type="hidden" name="sVisitDTTo" value="<?php print $param["sVisitDTTo"] ?>" />
-		<input type="hidden" name="sHow" value="<?php print $param["sHow"] ?>" />
-		<input type="hidden" name="orderBy" value="<?php print $param["orderBy"] ?>" />
-		<input type="hidden" name="orderTo" value="<?php print $param["orderTo"] ?>" />
-		<input type="hidden" name="sPage" value="<?php print $param["sPage"] ?>" />
-		<input type="hidden" name="stockNo" value="<?php print $param["stockNo"] ?>" />
+					<!--2025.01.23 get -> post　に修正 仕入登録画面で備考欄に1000文字入れて登録しようとするとサーバーエラーになる不具合修正のため-->
+					<form name="form" id="form" action="index.php" method="get">
+						<input type="hidden" name="act" />
+						<input type="hidden" name="sDel" value="<?php print $param["sDel"] ?>" />
+						<input type="hidden" name="sInsDTFrom" value="<?php print $param["sInsDTFrom"] ?>" />
+						<input type="hidden" name="sInsDTTo" value="<?php print $param["sInsDTTo"] ?>" />
+						<input type="hidden" name="sCharge" value="<?php print $param["sCharge"] ?>" />
+						<input type="hidden" name="sRank" value="<?php print $param["sRank"] ?>" />
+						<input type="hidden" name="sArticle" value="<?php print $param["sArticle"] ?>" />
+						<input type="hidden" name="sArticleFuri" value="<?php print $param["sArticleFuri"] ?>" />
+						<input type="hidden" name="sAreaFrom" value="<?php print $param["sAreaFrom"] ?>" />
+						<input type="hidden" name="sAreaTo" value="<?php print $param["sAreaTo"] ?>" />
+						<input type="hidden" name="sStation" value="<?php print $param["sStation"] ?>" />
+						<input type="hidden" name="sDistance" value="<?php print $param["sDistance"] ?>" />
+						<input type="hidden" name="sAgent" value="<?php print $param["sAgent"] ?>" />
+						<input type="hidden" name="sStore" value="<?php print $param["sStore"] ?>" />
+						<input type="hidden" name="sCover" value="<?php print $param["sCover"] ?>" />
+						<input type="hidden" name="sVisitDTFrom" value="<?php print $param["sVisitDTFrom"] ?>" />
+						<input type="hidden" name="sVisitDTTo" value="<?php print $param["sVisitDTTo"] ?>" />
+						<input type="hidden" name="sHow" value="<?php print $param["sHow"] ?>" />
+						<input type="hidden" name="orderBy" value="<?php print $param["orderBy"] ?>" />
+						<input type="hidden" name="orderTo" value="<?php print $param["orderTo"] ?>" />
+						<input type="hidden" name="sPage" value="<?php print $param["sPage"] ?>" />
+						<input type="hidden" name="stockNo" value="<?php print $param["stockNo"] ?>" />
 
-		<table border="0" cellpadding="5" cellspacing="1">
-			<tr>
-				<th>除外</th>
-				<td><input type="radio" name="del" value="1" checked /> 非除外
-					<input type="radio" name="del" value="0" /> 除外
-				</td>
-			</tr>
-			<tr>
-				<th>担当</th>
-				<td><input type="text" name="charge" value="<?php print $param["charge"] ?>" /></td>
-			</tr>
-			<tr>
-				<th>ランク</th>
-				<td>
-					<!-- 2025.01.23 仕入更新画面の「ランク」で登録しているデータと異なる値が表示される不具合を修正-->
-					<?php
-					if (!$param["stockNo"]) {
-						$param["rank"] = 1;
-					}
+						<table border="0" cellpadding="5" cellspacing="1">
+							<tr>
+								<th>除外</th>
+								<!-- 仕入登録画面の初期状態で非除外が選択されていない不具合を修正 -->
+								<td>
+									<!-- 2025.01.27「除外」に登録してデータの仕入更新画面を開くと「非除外」にチェックがついている不具合を修正 -->
+									<?php
+									$check1 = '';
+									$check2 = '';
+									if ($param["del"] == '0') {
+										$check2 = "checked";
+									} else {
+										$check1 = "checked";
+									}
+									?>
+									<input type="radio" name="del" value="1" <?php print $check1; ?> /> 非除外
+									<input type="radio" name="del" value="0" <?php print $check2; ?> /> 除外
+								</td>
+							</tr>
+							<tr>
+								<th>担当</th>
+								<td><input type="text" name="charge" value="<?php print $param["charge"] ?>" /></td>
+							</tr>
+							<tr>
+								<th>ランク</th>
+								<td>
+									<!-- 2025.01.23 仕入更新画面の「ランク」で登録しているデータと異なる値が表示される不具合を修正-->
+									<?php
+									if (!$param["stockNo"]) {
+										$param["rank"] = 1;
+									}
 
-					for ($i = 0; $i < 5; $i++) {
-						$check = '';
-						if (($param["rank"] - 1) == $i) {
-							$check = 'checked = "checked"';
+									for ($i = 0; $i < 5; $i++) {
+										$check = '';
+										if (($param["rank"] - 1) == $i) {
+											$check = 'checked = "checked"';
+										}
+									?>
+										<!-- 2025.01.21 初期値 -->
+										<!-- <input type="radio" name="rank" value="<?php print $i + 1; ?>" <?php if ($param["rank"] == $i + 1) print ' checked="checked"'; ?> /> <?php print fnRankName($i); ?> -->
+										<input type="radio" name="rank" value="<?php print $i + 1; ?>" <?php print $check; ?> /> <?php print fnRankName($i); ?>
+									<?php
+									}
+									?>
+								</td>
+							</tr>
+							<tr>
+								<th>物件名<span class="red">（必須）</span></th>
+								<td><input type="text" name="article" id="name" value="<?php print $param["article"] ?>" /></td>
+							</tr>
+							<tr>
+								<th>物件名（よみ）</th>
+								<td><input type="text" name="articleFuri" id="ruby" value="<?php print $param["articleFuri"] ?>" /></td>
+							</tr>
+							<tr>
+								<th>部屋</th>
+								<td><input type="text" name="room" value="<?php print $param["room"] ?>" /></td>
+							</tr>
+							<tr>
+								<th>面積</th>
+								<td><input type="text" name="area" value="<?php print $param["area"] ?>" />㎡</td>
+							</tr>
+							<tr>
+								<th>最寄駅</th>
+								<td><input type="text" name="station" value="<?php print $param["station"] ?>" /></td>
+							</tr>
+							<tr>
+								<th>距離</th>
+								<td>
+									<?php
+									if (!$param["stockNo"]) {
+										$param["distance"] = 1;
+									}
+									for ($i = 0; $i < 4; $i++) {
+										$check = '';
+										if (($param["distance"] - 1) == $i) {
+											$check = 'checked = "checked"';
+										}
+									?>
+										<!-- 2025.01.21 初期値の表示 -->
+										<!--2025.01.23 仕入更新画面の「距離」で登録しているデータと異なる値が表示される不具合を修正 -->
+										<!-- 修正前：<input type="radio" name="distance" value="<?php print $i + 1; ?>" <?php if ($param["distance"] == $i) print ' checked="checked"'; ?> /> <?php print fnDistanceName($i); ?> -->
+										<!-- for文の変数$iは0から始まり、DBに登録する値は1から始まるため、両変数の値を一致させるには変数$iの値を+1する必要がある。 -->
+										<input type="radio" name="distance" value="<?php print $i + 1; ?>" <?php print $check; ?> /> <?php print fnDistanceName($i); ?>
+									<?php
+									}
+									?>
+								</td>
+							</tr>
+							<tr>
+								<th>業者名</th>
+								<td><input type="text" name="agent" value="<?php print $param["agent"] ?>" /></td>
+							</tr>
+							<tr>
+								<th>店舗名</th>
+								<td><input type="text" name="store" value="<?php print $param["store"] ?>" /></td>
+							</tr>
+							<tr>
+								<th>担当者名</th>
+								<td><input type="text" name="cover" value="<?php print $param["cover"] ?>" /></td>
+							</tr>
+							<tr>
+								<th>内見</th>
+								<td><input type="text" name="visitDT" value="<?php print $param["visitDT"] ?>" /> <a href="javascript:cal1.write();" onChange="cal1.getFormValue(); cal1.hide();"><img src="./images/b_calendar.png"></a><span id="cal1"></span></td>
+							</tr>
+							<tr>
+								<th>机上金額</th>
+								<td><input type="text" name="deskPrice" value="<?php print $param["deskPrice"] ?>" />万円</td>
+							</tr>
+							<tr>
+								<th>売主希望金額</th>
+								<td><input type="text" name="vendorPrice" value="<?php print $param["vendorPrice"] ?>" />万円</td>
+							</tr>
+							<tr>
+								<th>備考</th>
+								<td><textarea name="note" cols="50" rows="10"><?php print $param["note"] ?></textarea></td>
+							</tr>
+							<tr>
+								<th>仕入経緯</th>
+								<td>
+									<?php
+									// 2025.01.23「仕入経緯」で登録しているデータと異なる値が表示される不具合を修正
+									if (!$param["stockNo"]) {
+										$param["how"] = 1;
+									}
+									for ($i = 0; $i < 6; $i++) {
+										// 2025.01.23
+										$check = '';
+										if (($param["how"] - 1) == $i) {
+											$check = 'checked = "checked"';
+										}
+									?>
+										<br />
+										<!--2025.01.21 仕入登録画面の「仕入経緯」初期状態で「会社案件」が選択されていない不具合修正-->
+										<!-- <input type="radio" name="how" value="<?php print $i + 1; ?>" <?php if ($param["how"] == $i + 1) print ' checked="checked"'; ?> /> <?php print fnHowName($i); ?> -->
+										<input type="radio" name="how" value="<?php print $i + 1; ?>" <?php print $check; ?> /> <?php print fnHowName($i); ?>
+									<?php
+									}
+									?>
+								</td>
+							</tr>
+
+						</table>
+
+						<a href="javascript:fnStockEditCheck();"><img src="./images/<?php print $param["btnImage"] ?>" /></a>
+						<!--btn_entr.pngが入る -->
+						<!--ポップアップが出る　よろしいですか？ -->
+						<!-- fnStockEditCheck()-->
+						<!--2025.01.23 更新画面にて戻るボタンをクリックすると検索一覧から表示されなくなる不具合を修正-->
+						<!-- <a href="javascript:form.act.value='stockEditComplete';form.submit();"><img src="./images/btn_return.png" /></a> -->
+						<a href="javascript:form.act.value='stockSearch';form.submit();"><img src="./images/btn_return.png" /></a>
+						<!-- 'stockSearch'を呼ぶと仕入管理一覧画面へ -->
+						<?php
+						if ($param["stockNo"]) {
+						?>
+							<a href="javascript:fnStockDeleteCheck(<?php print $param["stockNo"] ?>);"><img src="./images/btn_del.png" /></a>
+						<?php
 						}
-					?>
-						<!-- 2025.01.21 初期値の表示 -->
-						<!-- <input type="radio" name="rank" value="<?php print $i + 1; ?>" <?php if ($param["rank"] == $i + 1) print ' checked="checked"'; ?> /> <?php print fnRankName($i); ?> -->
-						<input type="radio" name="rank" value="<?php print $i + 1; ?>" <?php print $check; ?> /> <?php print fnRankName($i); ?>
-					<?php
-					}
-					?>
-				</td>
-			</tr>
-			<tr>
-				<th>物件名<span class="red">（必須）</span></th>
-				<td><input type="text" name="article" id="name" value="<?php print $param["article"] ?>" /></td>
-			</tr>
-			<tr>
-				<th>物件名（よみ）</th>
-				<td><input type="text" name="articleFuri" id="ruby" value="<?php print $param["articleFuri"] ?>" /></td>
-			</tr>
-			<tr>
-				<th>部屋</th>
-				<td><input type="text" name="room" value="<?php print $param["room"] ?>" /></td>
-			</tr>
-			<tr>
-				<th>面積</th>
-				<td><input type="text" name="area" value="<?php print $param["area"] ?>" />㎡</td>
-			</tr>
-			<tr>
-				<th>最寄駅</th>
-				<td><input type="text" name="station" value="<?php print $param["station"] ?>" /></td>
-			</tr>
-			<tr>
-				<th>距離</th>
-				<td>
-					<?php
-					if (!$param["stockNo"]) {
-						$param["distance"] = 1;
-					}
-					for ($i = 0; $i < 4; $i++) {
-						$check = '';
-						if (($param["distance"] - 1) == $i) {
-							$check = 'checked = "checked"';
-						}
-					?>
-						<!-- 2025.01.21 初期値の表示 -->
-						<!--2025.01.23 仕入更新画面の「距離」で登録しているデータと異なる値が表示される不具合を修正 -->
-						<!-- 修正前：<input type="radio" name="distance" value="<?php print $i + 1; ?>" <?php if ($param["distance"] == $i) print ' checked="checked"'; ?> /> <?php print fnDistanceName($i); ?> -->
-						<!-- for文の変数$iは0から始まり、DBに登録する値は1から始まるため、両変数の値を一致させるには変数$iの値を+1する必要がある。 -->
-						<input type="radio" name="distance" value="<?php print $i + 1; ?>" <?php print $check; ?> /> <?php print fnDistanceName($i); ?>
-					<?php
-					}
-					?>
-				</td>
-			</tr>
-			<tr>
-				<th>業者名</th>
-				<td><input type="text" name="agent" value="<?php print $param["agent"] ?>" /></td>
-			</tr>
-			<tr>
-				<th>店舗名</th>
-				<td><input type="text" name="store" value="<?php print $param["store"] ?>" /></td>
-			</tr>
-			<tr>
-				<th>担当者名</th>
-				<td><input type="text" name="cover" value="<?php print $param["cover"] ?>" /></td>
-			</tr>
-			<tr>
-				<th>内見</th>
-				<td><input type="text" name="visitDT" value="<?php print $param["visitDT"] ?>" /> <a href="javascript:cal1.write();" onChange="cal1.getFormValue(); cal1.hide();"><img src="./images/b_calendar.png"></a><span id="cal1"></span></td>
-			</tr>
-			<tr>
-				<th>机上金額</th>
-				<td><input type="text" name="deskPrice" value="<?php print $param["deskPrice"] ?>" />万円</td>
-			</tr>
-			<tr>
-				<th>売主希望金額</th>
-				<td><input type="text" name="vendorPrice" value="<?php print $param["vendorPrice"] ?>" />万円</td>
-			</tr>
-			<tr>
-				<th>備考</th>
-				<td><textarea name="note" cols="50" rows="10"><?php print $param["note"] ?></textarea></td>
-			</tr>
-			<tr>
-				<th>仕入経緯</th>
-				<td>
-					<?php
-					// 2025.01.23「仕入経緯」で登録しているデータと異なる値が表示される不具合を修正
-					if (!$param["stockNo"]) {
-						$param["how"] = 1;
-					}
-					for ($i = 0; $i < 6; $i++) {
-						// 2025.01.23
-						$check = '';
-						if (($param["how"] - 1) == $i) {
-							$check = 'checked = "checked"';
-						}
-					?>
-						<br />
-						<!--2025.01.21 初期値設定 -->
-						<!-- <input type="radio" name="how" value="<?php print $i + 1; ?>" <?php if ($param["how"] == $i) print ' checked="checked"'; ?> /> <?php print fnHowName($i); ?> -->
-						<input type="radio" name="how" value="<?php print $i + 1; ?>" <?php print $check; ?> /> <?php print fnHowName($i); ?>
-					<?php
-					}
-					?>
-				</td>
-			</tr>
+						?>
 
-		</table>
-
-		<a href="javascript:fnStockEditCheck();"><img src="./images/<?php print $param["btnImage"] ?>" /></a>
-		<!--btn_entr.pngが入る -->
-		<!--ポップアップが出る　よろしいですか？ -->
-		<!-- fnStockEditCheck()-->
-		<!--2025.01.23 更新画面にて戻るボタンをクリックすると検索一覧から表示されなくなる不具合を修正-->
-		<!-- <a href="javascript:form.act.value='stockEditComplete';form.submit();"><img src="./images/btn_return.png" /></a> -->
-		<a href="javascript:form.act.value='stockSearch';form.submit();"><img src="./images/btn_return.png" /></a>
-		<!-- 'stockSearch'を呼ぶと仕入管理一覧画面へ -->
-		<?php
-		if ($param["stockNo"]) {
-		?>
-			<a href="javascript:fnStockDeleteCheck(<?php print $param["stockNo"] ?>);"><img src="./images/btn_del.png" /></a>
-		<?php
-		}
-		?>
-
-	</form>
-<?php
-}
-?>
+					</form>
+				<?php
+			}
+				?>

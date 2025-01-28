@@ -87,6 +87,8 @@ function fnSqlTradeUpdate($tradeNo, $name, $nameFuri, $branch, $branchFuri, $zip
 	$sql .= ",FAX = '$fax'";
 	$sql .= ",MOBILE = '$mobile'";
 	$sql .= ",INTERIOR = '$interior'";
+	// 2025.01.27 データ更新時、DBの更新日時(UPDT)が登録日時(INSDT)のままになっている不具合を修正
+	$sql .= ",UPDT = CURRENT_TIMESTAMP";  //←追加
 	$sql .= ",DEL = '$del'";
 	$sql .= " WHERE TRADENO = $tradeNo";
 

@@ -7,11 +7,14 @@ function fnPage($c, $p, $a)
 	$pages = (int)(($c - 1) / PAGE_MAX) + 1;
 
 	if ($pages < $p) {
-		$p--;
+		// 2025.01.27 検索結果の2ページ目以降を表示した状態で、新しい条件を検索すると検索結果が正しく表示されない
+		//$p--;
+		$p = $pages;
 	}
 
 	if ($p > 1 && $pages > 1) {
 ?>
+
 		<a href="javascript:form.act.value='<?php print $a; ?>';form.sPage.value=<?php print $p - 1; ?>;form.submit();">前へ</a> |
 		<?php
 	}

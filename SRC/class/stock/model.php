@@ -12,6 +12,7 @@ function fnSqlStockList($flg, $param)
             $limit = "";
             break;
         case 1:
+            // 2025.01.27 仕入管理一覧での検索結果一覧部分が1行も表示されない不具合を修正
             $select  = "SELECT STOCKNO,CHARGE,`RANK`,DATE_FORMAT(INSDT,'%Y/%m/%d'),ARTICLE,ARTICLEFURI,ROOM,"
                 . "IF(AREA > 0,AREA,''),STATION,DISTANCE,AGENT,STORE,COVER,IF(VISITDT > '0000-00-00',DATE_FORMAT(VISITDT,'%Y/%m/%d'),''),"
                 . "IF(DESKPRICE > 0,DESKPRICE,''),IF(VENDORPRICE > 0,VENDORPRICE,''),NOTE";
@@ -38,6 +39,7 @@ function fnSqlStockList($flg, $param)
             } else {
                 $where .= " OR ";
             }
+            // 2025.01.27 仕入管理一覧での検索結果一覧部分が1行も表示されない不具合を修正
             $where .= "`RANK` = '$value'";
         }
         $where .= ")";
@@ -61,7 +63,9 @@ function fnSqlStockList($flg, $param)
         $where .= " AND AREA <= '" . $param["sAreaTo"] . "'";
     }
     if ($param["sStation"]) {
-        $where .= " AND STATION = '" . $param["sStation"] . "'";
+        // 2025.01.27 仕入管理一覧表示画面での検索時に、最寄駅で部分検索ができない不具合を修正
+        //$where .= " AND STATION = '" . $param["sStation"] . "'";
+        $where .= " AND STATION LIKE '%" . $param["sStation"] . "%'";
     }
     if ($param["sDistance"]) {
         $where .= " AND (";
@@ -113,7 +117,9 @@ function fnSqlStockList($flg, $param)
 //
 function fnSqlStockEdit($stockNo)
 {
-    $sql  = "SELECT CHARGE,RANK,ARTICLE,ARTICLEFURI,ROOM,IF(AREA > 0,AREA,''),STATION,DISTANCE,AGENT,STORE,COVER,"
+    // 20.25.01.27 仕入更新画面で、更新の対象となる項目が各フォームに入力されていない不具合を修正
+    $sql  = "SELECT CHARGE,`RANK`,ARTICLE,ARTICLEFURI,ROOM,IF(AREA > 0,AREA,''),STATION,DISTANCE,AGENT,STORE,COVER,"
+        //$sql  = "SELECT CHARGE,RANK,ARTICLE,ARTICLEFURI,ROOM,IF(AREA > 0,AREA,''),STATION,DISTANCE,AGENT,STORE,COVER,"
         . "IF(VISITDT > '0000-00-00',DATE_FORMAT(VISITDT,'%Y/%m/%d'),''),IF(DESKPRICE > 0,DESKPRICE,''),"
         . "IF(VENDORPRICE > 0,VENDORPRICE,''),NOTE,HOW,DEL";
     $sql .= " FROM TBLSTOCK";
@@ -129,6 +135,7 @@ function fnSqlStockUpdate($param)
 {
     $sql = "UPDATE TBLSTOCK";
     $sql .= " SET CHARGE = '" . $param["charge"] . "'";
+    // 2025.01.27 仕入更新画面で更新した内容が、検索結果一覧やテーブルに反映されない不具合を修正
     $sql .= ",`RANK` = '" . $param["rank"] . "'";
     $sql .= ",ARTICLE = '" . $param["article"] . "'";
     $sql .= ",ARTICLEFURI = '" . $param["articleFuri"] . "'";
@@ -157,6 +164,8 @@ function fnSqlStockUpdate($param)
 function fnSqlStockInsert($param)
 {
     $sql = "INSERT INTO TBLSTOCK(";
+    // 2025.01.27
+    // 仕入登録画面で新規登録しても仕入管理テーブルに反映されない不具合を修正
     $sql .= "STOCKNO,CHARGE,`RANK`,ARTICLE,ARTICLEFURI,ROOM,AREA,STATION,DISTANCE,AGENT,STORE,COVER,VISITDT,DESKPRICE,VENDORPRICE,NOTE,HOW,INSDT,UPDT,DEL";
     $sql .= ")VALUES(";
     $sql .= "'" . $param["stockNo"] . "','" . $param["charge"] . "','" . $param["rank"] . "','" . $param["article"] . "','"
