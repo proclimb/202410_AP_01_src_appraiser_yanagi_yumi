@@ -37,6 +37,8 @@ function isLength(length, msg, obj) {
 	rtn = false;
 	if (obj.value.length > length) {
 		alert(msg + "は" + length + "文字以内で入力して下さい");
+		//2025.01.29 入力桁数が上限値以上でも入力チェックが機能しない不具合を修正
+		rtn = true;
 	}
 	return rtn;
 }

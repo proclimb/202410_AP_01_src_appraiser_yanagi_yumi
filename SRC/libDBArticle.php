@@ -9,7 +9,9 @@ function fnSqlArticleList($flg, $sDel, $sArticle, $sRoom, $sKeyPlace, $sArticleN
 			$sql  = "SELECT COUNT(*)";
 			break;
 		case 1:
-			$sql  = "SELECT ARTICLENO, ARTICLE, RO0M, KEYPLACE, ARTICLENOTE, KEYBOX, DRAWING, SELLCHARGE";
+			// 2025.01.29 検索ボタンを押下しても検索結果が表示されない不具合を修正
+			// $sql  = "SELECT ARTICLENO, ARTICLE, RO0M, KEYPLACE, ARTICLENOTE, KEYBOX, DRAWING, SELLCHARGE";
+			$sql  = "SELECT ARTICLENO, ARTICLE, ROOM, KEYPLACE, ARTICLENOTE, KEYBOX, DRAWING, SELLCHARGE";
 			break;
 	}
 	$sql .= " FROM TBLARTICLE";
@@ -38,8 +40,10 @@ function fnSqlArticleList($flg, $sDel, $sArticle, $sRoom, $sKeyPlace, $sArticleN
 	if ($orderBy) {
 		$sql .= " ORDER BY $orderBy $orderTo";
 	}
+	// 2025.01.09 検索ボタンを押下しても検索結果が表示されない不具合を修正
 	if ($flg) {
-		$sql .= " LIMIT " . (($sPage + 1) * PAGE_MAX) . ", " . PAGE_MAX;
+		// $sql .= " LIMIT " . (($sPage + 1) * PAGE_MAX) . ", " . PAGE_MAX;
+		$sql .= " LIMIT " . (($sPage - 1) * PAGE_MAX) . ", " . PAGE_MAX;
 	}
 
 	return ($sql);
@@ -86,6 +90,8 @@ function fnSqlArticleUpdate($articleNo, $article, $room, $keyPlace, $address, $a
 //
 //物件管理情報登録
 //
+// 2025.01.29 新規登録時に入力した値がDBに正しく登録されない不具合を修正
+/*
 function fnSqlArticleInsert($articleNo,  $keyPlace, $article, $address,  $keyBox, $articleNote, $drawing, $sellCharge, $room, $del)
 {
 	$sql  = "INSERT INTO tblarticle (";
@@ -101,8 +107,23 @@ function fnSqlArticleInsert($articleNo,  $keyPlace, $article, $address,  $keyBox
 
 	return ($sql);
 }
+*/
 
+function fnSqlArticleInsert($articleNo, $article, $room, $keyPlace, $address, $articleNote, $keyBox, $drawing, $sellCharge, $del)
+{
+	$sql  = "INSERT INTO TBLARTICLE (";
+	$sql .= " ARTICLENO, ARTICLE, ROOM, KEYPLACE, ADDRESS, ARTICLENOTE, KEYBOX, DUEDT, SELLCHARGE, AREA, YEARS, SELLPRICE, INTERIORPRICE, CONSTTRADER,"
+		. " CONSTPRICE, CONSTADD, CONSTNOTE, PURCHASEDT, WORKSTARTDT, WORKENDDT, LINEOPENDT, LINECLOSEDT, RECEIVE, HOTWATER, SITEDT, LEAVINGFORM,"
+		. " LEAVINGDT, MANAGECOMPANY, FLOORPLAN, FORMEROWNER, BROKERCHARGE, BROKERCONTACT, INTERIORCHARGE, CONSTFLG1, CONSTFLG2, CONSTFLG3, CONSTFLG4, INSDT, UPDT, DEL,"
+		. " DRAWING, LINEOPENCONTACTDT, LINECLOSECONTACTDT, LINECONTACTNOTE, ELECTRICITYCHARGE, GASCHARGE, LIGHTORDER";
+	$sql .= " ) VALUES ( ";
+	$sql .= "'$articleNo', '$article', '$room', '$keyPlace', '$address', '$articleNote', '$keyBox', '', '$sellCharge', '', '', '', '', '',"
+		. " '', '', '', '', '', '', '', '', '', '', '', '',"
+		. " '', '', '', '', '', '', '', '', '', '', '', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '$del',"
+		. " '$drawing', '', '', '', '', '', '' )";
 
+	return ($sql);
+}
 
 //
 //物件管理情報削除

@@ -19,12 +19,14 @@ function subArticle()
 	$orderTo = $_REQUEST['orderTo'];
 	$sPage   = $_REQUEST['sPage'];
 
-	if ($sDel = '') {
+	// 2025.01.29 物件管理一覧画面の初期表示で除外にチェックが入っている不具合を修正
+	if ($sDel == '') {
 		$sDel = 1;
 	}
 
+	// 2025.01.29 検索結果のページャーが正しく表示されない不具合を修正
 	if (!$sPage) {
-		$sPage = l;
+		$sPage = 1;
 	}
 
 	if (!$orderBy) {
@@ -86,8 +88,13 @@ function subArticle()
 		return;
 	}
 	$sql = fnSqlArticleList(0, $sDel, $sArticle, $sRoom, $sKeyPlace, $sArticleNote, $sKeyBox, $sDrawing, $sSellCharge, $sPage, $orderBy, $orderTo);
-	$res = mysql_query($sql);
-	$row = mysql_fetch_array($res);
+
+	// 2025.01.29　検索ボタンを押下しても検索結果が表示されない不具合を修正
+	// $res = mysql_query($sql);
+	// $row = mysql_fetch_array($res);
+
+	$res = mysqli_query($conn, $sql);
+	$row = mysqli_fetch_array($res);
 
 	$count = $row[0];
 
@@ -188,7 +195,8 @@ function subArticleEdit()
 		$btnImage = 'btn_enter.png';
 	}
 
-	subMenu2();
+	// 2025.01.29 物件登録・更新画面でメニューが表示されない不具合を修正
+	subMenu();
 ?>
 	<script type="text/javascript" src="./js/article.js"></script>
 
@@ -213,17 +221,18 @@ function subArticleEdit()
 		<table border="0" cellpadding="5" cellspacing="1">
 			<tr>
 				<th>除外</th>
-				<?php if ($articleNo) { ?>
-					<td>
-						<input type="checkbox" name="del" value="1" checked="checked" /> 非除外
-						<input type="checkbox" name="del" value="0" <?php if ($del == '0') print ' checked="checked"' ?> /> 除外
-					</td>
-				<?php } else { ?>
-					<td>
-						<input type="radio" name="del" value="1" checked="checked" /> 非除外
-						<input type="radio" name="del" value="0" <?php if ($del == '0') print ' checked="checked"' ?> /> 除外
-					</td>
-				<?php } ?>
+				<!-- 2025.01.29 編集時に除外がチェックボックスになっている不具合を修正 -->
+				<!-- <?php if ($articleNo) { ?> -->
+				<!-- <td> -->
+				<!-- <input type="checkbox" name="del" value="1" checked="checked" /> 非除外 -->
+				<!-- <input type="checkbox" name="del" value="0" <?php if ($del == '0') print ' checked="checked"' ?> /> 除外 -->
+				<!-- </td> -->
+				<!-- <?php } else { ?> -->
+				<td>
+					<input type="radio" name="del" value="1" checked="checked" /> 非除外
+					<input type="radio" name="del" value="0" <?php if ($del == '0') print ' checked="checked"' ?> /> 除外
+				</td>
+				<!-- <?php } ?> -->
 			</tr>
 			<tr>
 				<th>物件名<span class="red">（必須）</span></th>
@@ -263,7 +272,11 @@ function subArticleEdit()
 		<!--2025.01.28 新規登録・更新画面で戻るボタンを押下するとファイルマネージャー画面に遷移する不具合を修正  -->
 		<!-- <a href="javascript:form.act.value='fManager';form.submit();"><img src="./images/btn_return.png" /></a> -->
 		<a href="javascript:form.act.value='articleSearch';form.submit();"><img src="./images/btn_return.png" /></a>
-		&nbsp;&nbsp;<a href="javascript:fnArticleDeleteCheck(<?php print $articleNo ?>);"><img src="./images/btn_del.png" /></a>
+		<!-- 2025．01.29　物件登録画面に削除ボタンが表示されている不具合を修正 -->
+		<!-- &nbsp;&nbsp;<a href="javascript:fnArticleDeleteCheck(<?php print $articleNo ?>);"><img src="./images/btn_del.png" /></a> -->
+		<?php if ($articleNo) { ?>
+			&nbsp;&nbsp;<a href="javascript:fnArticleDeleteCheck(<?php print $articleNo ?>);"><img src="./images/btn_del.png" /></a>
+		<?php } ?>
 	</form>
 <?php
 }
