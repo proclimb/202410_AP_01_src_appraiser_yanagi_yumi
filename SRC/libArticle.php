@@ -46,7 +46,8 @@ function subArticle()
 		<input type="hidden" name="sPage" value="<?php print $sPage ?>" />
 		<input type="hidden" name="articleNo" />
 		<input type="hidden" name="sName" />
-		<input type="hidden" name="sRoom" />
+		<!-- 2025.01.30 表示のリンクを押すと、FMへ遷移するが部屋名が引継がれない不具合を修正 -->
+		<!-- <input type="hidden" name="sRoom" /> -->
 
 		<a href="javascript:form.act.value='articleEdit';form.submit();"><img src="./images/btn_enter.png"></a>
 
@@ -60,19 +61,26 @@ function subArticle()
 				</tr>
 				<tr>
 					<th>物件名</th>
-					<td><input type="text" name="sArticle" value="<?php print $sRooms ?>" size="50" /></td>
+					<!-- 2025.01.30 物件名を入力して検索した値が部屋番号に表示される不具合を修正-->
+					<!-- <td><input type="text" name="sArticle" value="<?php print $sRooms ?>" size="50" /></td> -->
+					<td><input type="text" name="sArticle" value="<?php print $sArticle ?>" size="50" /></td>
 					<th>キーBox番号</th>
 					<td><input type="text" name="sKeyBox" value="<?php print $sKeyBox ?>" size="30" /></td>
 				</tr>
 				<tr>
 					<th>部屋番号</th>
-					<td><input type="text" name="sRoom" value="" size="30" /><?php print $sArticle ?></td>
+					<!-- 2025.01.30 物件名を入力して検索した値が部屋番号に表示される不具合を修正- -->
+					<!-- 2025.01.30 物件名に値を入力して検索をすると部屋番号の入力フォームの横に入力した値が表示される不具合を修正 -->
+					<!-- <td><input type="text" name="sRoom" value="" size="30" /><?php print $sArticle ?></td> -->
+					<td><input type="text" name="sRoom" value="<?php print $sRoom ?>" size="30" /></td>
 					<th>3Dパース</th>
 					<td><input type="text" name="sDrawing" value="<?php print $sDrawing ?>" size="30" /></td>
 				</tr>
 				<tr>
 					<th>鍵場所</th>
-					<td><input type="text" name="sKeyPlace" value="<?php print $sKagPlace ?>" size="30" /></td>
+					<!-- 2025.01.30 鍵場所に入力した検索ワードが消える不具合を修正 -->
+					<!-- <td><input type="text" name="sKeyPlace" value="<?php print $sKagPlace ?>" size="30" /></td> -->
+					<td><input type="text" name="sKeyPlace" value="<?php print $sKeyPlace ?>" size="30" /></td>
 					<th>営業担当者</th>
 					<td><input type="text" name="sSellCharge" value="<?php print $sSellCharge ?>" /></td>
 				</tr>
@@ -129,17 +137,33 @@ function subArticle()
 				$sellCharge  = $row["SELLCHARGE"];
 			?>
 				<tr>
-					<td class="list_td<?php print $i ?>"><a href="javascript:form.act.value='articleEdit';form.articleNo.value='<?php print $rrticleNo ?>';form.submit();"><?php print $article ?></a></td>
+					<!-- 20253.01.30 物件名のリンクを押してもDBに登録された値が表示されない不具合を修正 -->
+					<!-- <td class="list_td<?php print $i ?>"><a href="javascript:form.act.value='articleEdit';form.articleNo.value='<?php print $rrticleNo ?>';form.submit();"><?php print $article ?></a></td> -->
+					<!-- 検索結果の内容がヘッダ名とあっていない不具合を修正　には以下の文が入っているんだよな・・・ -->
+					<td class="list_td<?php print $i ?>"><a href="javascript:form.act.value='articleEdit';form.articleNo.value=<?php print $articleNo ?>;form.submit();"><?php print $article ?></a></td>
 					<td class="list_td<?php print $i ?>"><?php print $room ?></td>
-					<td class="list_td<?php print $i ?>"><?php print $drawing ?></td>
+					<!-- 2025.01.30 順番変更 -->
 					<td class="list_td<?php print $i ?>"><?php print $keyPlace ?></td>
+					<!-- 2025.01.30 順番変更 -->
 					<td class="list_td<?php print $i ?>"><?php print $articleNote ?></td>
-					<td class="list_td<?php print $i ?>"><?php print $room ?></td>
+					<!-- 追加 -->
+					<td class="list_td<?php print $i ?>"><a href="javascript:form.act.value='fManager';form.sName.value='<?php print $article ?>';form.sRoom.value='<?php print $room ?>';form.submit();">表示</a></td>
+					<td class="list_td<?php print $i ?>"><?php print $keyBox ?></td>
+					<td class="list_td<?php print $i ?>"><?php print $drawing ?></td>
+
+					<!-- $room が２つあった -->
+					<!-- <td class="list_td<?php print $i ?>"><?php print $room ?></td> -->
+
 					<td class="list_td<?php print $i ?>"><?php print $sellCharge ?></td>
-					<td class="list_td<?php print $i ?>"><a href="javascript:form.act.value='stock';form.sName.value='<?php print $article ?>';form.sRoom.value='<?php print $room ?>';form.submit();">表示</a></td>
+
+					<!-- 2025.01.30 検索結果の内容がヘッダ名とあっていない、22.書類のリンクを押下すると仕入管理の画面に遷移する不具合を修正 -->
+					<!-- <td class="list_td<?php print $i ?>"><a href="javascript:form.act.value='stock';form.sName.value='<?php print $article ?>';form.sRoom.value='<?php print $room ?>';form.submit();">表示</a></td> -->
+					<td class="list_td<?php print $i ?>"><a href="javascript:form.act.value='fManager';form.sName.value='<?php print $article ?>';form.sRoom.value='<?php print $room ?>';form.submit();">表示</a></td>
 				</tr>
 			<?php
-				$i = ($i + 1) % 3;
+				// 2025.01.30 検索結果の背景色が正しく表示されない不具合を修正
+				//	$i = ($i + 1) % 3;
+				$i = ($i + 1) % 2;
 			}
 			?>
 		</table>
@@ -328,6 +352,10 @@ function subArticleEditComplete()
 
 		/* $sql = fnSqlFManagerInsert(fnNextNo('FM'),$article,$room,$articleNote,$del);
 		   $res = mysqli_query($conn,$sql); */
+
+		// 2025.01.30 新規登録時、ファイルマネージャーに保存されていない不具合を修正
+		$sql = fnSqlFManagerInsert(fnNextNo('FM'), $article, $room, $articleNote, $del);
+		$res = mysqli_query($conn, $sql);
 	}
 
 	$_REQUEST['act'] = 'articleSearch';

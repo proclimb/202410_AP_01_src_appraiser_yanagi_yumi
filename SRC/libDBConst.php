@@ -170,12 +170,18 @@ function fnSqlConstUpdate(
 	$sql .= ",BROKERCHARGE = '$brokerCharge'";
 	$sql .= ",BROKERCONTACT = '$brokerContact'";
 	$sql .= ",INTERIORCHARGE = '$interiorCharge'";
+
 	$sql .= ",CONSTFLG1 = '$constFlg1'";
 	$sql .= ",CONSTFLG2 = '$constFlg2'";
 	$sql .= ",CONSTFLG3 = '$constFlg3'";
 	$sql .= ",CONSTFLG4 = '$constFlg4'";
+
+	// 2025.01.30 工事更新時、更新日時(UPDT)が更新されない不具合を修正
+	$sql .= ",UPDT = CURRENT_TIMESTAMP";
+
 	$sql .= ",LINEOPENCONTACTDT = '$lineOpenContactDT'";
 	$sql .= ",LINECLOSECONTACTDT = '$lineCloseContactDT'";
+
 	$sql .= ",LINECONTACTNOTE = '$lineContactnote'";
 	$sql .= ",ELECTRICITYCHARGE = '$electricityCharge'";
 	$sql .= ",GASCHARGE = '$gasCharge'";
