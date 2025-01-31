@@ -93,6 +93,10 @@ function fnSqlArticleUpdate($articleNo, $article, $room, $keyPlace, $address, $a
 	$sql .= ",KEYBOX = '$keyBox'";
 	$sql .= ",DRAWING = '$drawing'";
 	$sql .= ",SELLCHARGE = '$sellCharge'";
+
+	// 2025.01.30 	データ更新時、更新日時(UPDT)が更新されない不具合を修正
+	$sql .= ",UPDT = CURRENT_TIMESTAMP";
+
 	$sql .= ",DEL = '$del'";
 	$sql .= " WHERE ARTICLENO = $articleNo";
 
@@ -145,7 +149,9 @@ function fnSqlArticleInsert($articleNo, $article, $room, $keyPlace, $address, $a
 function fnSqlArticleDelete($articleNo)
 {
 	$sql  = "UPDATE TBLARTICLE";
-	$sql .= " SET DEL = 0";
+	// 2025.01.30 削除しても除外にチェックを入れて検索すると表示される不具合を修正
+	// $sql .= " SET DEL = 0";
+	$sql .= " SET DEL = -1";
 	$sql .= ",UPDT = CURRENT_TIMESTAMP";
 	$sql .= " WHERE ARTICLENO = '$articleNo'";
 

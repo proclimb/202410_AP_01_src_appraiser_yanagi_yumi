@@ -51,7 +51,9 @@ function fnSellEditCheck() {
 		alert('築年を入力してください');
 		return;
 	}
-	if (tmp.length != 4 || tmp.match(/[^0-9]+/)) {
+	// 2025.01.31　築年数が4桁でないと登録できない不具合を修正
+	// if (tmp.length != 4 || tmp.match(/[^0-9]+/)) {
+	if (tmp.length > 4 || tmp.match(/[^0-9]+/)) {
 		alert('築年は4桁の半角数字で入力してください');
 		return;
 	}
@@ -71,7 +73,9 @@ function fnSellEditCheck() {
 		alert('専有面積を入力してください');
 		return;
 	}
-	if (tmp.length > 6 || tmp.match(/[^0-9\.]+/)) {
+	// 2025.01.30　占有面積のバリデーションチェックが機能していない不具合を修正
+	// if (tmp.length > 6 || tmp.match(/[^0-9\.]+/)) {
+	if (tmp.length > 0 && !tmp.match(/^([0-9]{1,3})(\.[0-9]{1,2})?$/)) {
 		alert('専有面積は3桁以内（小数点以下2桁以内）の半角数字で入力してください');
 		return;
 	}

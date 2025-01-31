@@ -84,7 +84,9 @@ function fnSqlSellList($flg, $param)
 //
 function fnSqlSellEdit($sellNo)
 {
-    $select  = "SELECT SEARCHDT,ARTICLE,ADDRESS,STATION,IF(FOOT > 0,FOOT,''),";
+    // 2025.01.30 売主物件更新画面で表示される日付の書式が仕様書と異なる不具合を修正
+    // $select  = "SELECT SEARCHDT,ARTICLE,ADDRESS,STATION,IF(FOOT > 0,FOOT,''),";
+    $select = "SELECT IF(SEARCHDT > '0000-00-00',DATE_FORMAT(SEARCHDT,'%Y/%m/%d'),''),ARTICLE,ADDRESS,STATION,IF(FOOT > 0,FOOT,''),";
     $select .= "IF(YEARS > 0,YEARS,''),IF(FLOOR > 0,FLOOR,''),IF(AREA > 0,AREA,''),SELLER,IF(PRICE > 0,PRICE,''),NOTE";
     $from = " FROM TBLSELL";
     $where = " WHERE DEL = 1";
@@ -112,6 +114,8 @@ function fnSqlSellUpdate($param)
     $sql .= ",NOTE = '" . $param["note"] . "'";
     $sql .= ",UPDT = CURRENT_TIMESTAMP";
 
+    // 2025.01.30 売主物件更新時を行うと全てのデータが同じ内容で更新される不具合を修正（下記1行を追加）
+    $sql .= " WHERE SELLNO = " . $param["sellNo"];
     return $sql;
 }
 
@@ -126,7 +130,9 @@ function fnSqlSellInsert($param)
     $sql .= "'" . $param["sellNo"] . "','" . $param["searchDT"] . "','" . $param["article"] . "','" . $param["address"] . "',"
         . "'" . $param["station"] . "','" . $param["foot"] . "','" . $param["years"] . "','" . $param["floor"] . "',"
         . "'" . $param["area"] . "','" . $param["seller"] . "','" . $param["price"] . "','" . $param["note"] . "',"
-        . "CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)";
+        // 2025.01.31 新規登録時した後、売主物件一覧の検索結果に表示されない不具合を修正
+        // . "CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)";
+        . "CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1)";
 
     return $sql;
 }
@@ -137,7 +143,9 @@ function fnSqlSellInsert($param)
 function fnSqlSellDelete($sellNo)
 {
     $sql = "UPDATE TBLSELL";
-    $sql .= " SET DEL = 1";
+    // 2025.01.31 削除ボタンを押下しても削除されない不具合を修正
+    // $sql .= " SET DEL = 1";
+    $sql .= " SET DEL = -1";
     $sql .= ",UPDT = CURRENT_TIMESTAMP";
     $sql .= " WHERE SELLNO = '$sellNo'";
 
