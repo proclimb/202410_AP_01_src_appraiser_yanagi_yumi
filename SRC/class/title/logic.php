@@ -87,8 +87,9 @@ function subFTitleEditComplete()
     $param["classNo"] = mysqli_real_escape_string($param["conn"], $_REQUEST['classNo']);
     $param["seqNo"] = mysqli_real_escape_string($param["conn"], $_REQUEST['seqNo']);
     $param["name"] = mysqli_real_escape_string($param["conn"], $_REQUEST['name']);
-    $param["sClassNo"] = mysqli_real_escape_string($conn, $_REQUEST['sClassNo']);
-
+    // 2025.02.05 タイトル管理更新で削除ボタンを押下すると何も表示されなくなる不具合を修正
+    // $param["sClassNo"] = mysqli_real_escape_string($conn, $_REQUEST['sClassNo']);
+    $param["sClassNo"] = mysqli_real_escape_string($param["conn"], $_REQUEST['sClassNo']);
     $ErrClassNo = subFTitleRepetition($param["classNo"], $param["DocNo"]);
 
     if ($param["DocNo"]) {
@@ -184,7 +185,9 @@ function subFTitleDelete()
         $res = mysqli_query($conn, $sql);
         while ($row = mysqli_fetch_array($res)) {
             $sql = fnSqlFTitleDelete($row['DOCNO']);
-            $result = mysqil_query($conn, $sql);
+            // 2025.02.05 タイトル管理更新で削除ボタンを押下すると何も表示されなくなる不具合を修正
+            // $result = mysqil_query($conn, $sql);
+            $result = mysqli_query($conn, $sql);
         }
     } else {
         $sql = fnSqlFTitleDelete($DocNo);
