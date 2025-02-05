@@ -12,9 +12,22 @@ function fnSqlSellList($flg, $param)
             $limit = "";
             break;
         case 1:
+
             $select = "SELECT SELLNO,IF(SEARCHDT > '0000-00-00',DATE_FORMAT(SEARCHDT,'%Y/%m/%d'),''),ARTICLE,"
                 . "ADDRESS,STATION,IF(FOOT > 0,FOOT,''),IF(YEARS > 0,YEARS,''),IF(FLOOR > 0,FLOOR,''),"
                 . "IF(AREA > 0,AREA,''),SELLER,IF(PRICE > 0,PRICE,''),NOTE";
+
+            // 2025.01.31 数値項目を0で登録した場合、検索結果の一覧表示では、空白として表示される不具合を修正
+            /* Redmineに「数値項目を0で登録した場合、検索結果の一覧表示では、空白として表示される」不具合として掲載があるが、使い方が不明なのでコメントアウトにする
+            /*
+                IF(SEARCHDT > '0000-00-00',DATE_FORMAT(SEARCHDT,'%Y/%m/%d'),'')
+                IF(FOOT > 0,FOOT,'')
+                IF(YEARS > 0,YEARS,'')
+                IF(FLOOR > 0,FLOOR,'')
+                IF(AREA > 0,AREA,'')
+                IF(PRICE > 0,PRICE,'')
+            */
+
             // 並び替えとデータ抽出数
             if ($param["orderBy"]) {
                 $order = " ORDER BY " . $param["orderBy"] . " " . $param["orderTo"];
@@ -86,8 +99,19 @@ function fnSqlSellEdit($sellNo)
 {
     // 2025.01.30 売主物件更新画面で表示される日付の書式が仕様書と異なる不具合を修正
     // $select  = "SELECT SEARCHDT,ARTICLE,ADDRESS,STATION,IF(FOOT > 0,FOOT,''),";
+
+    // 2025.01.31 数値項目に0を登録した場合、更新画面を開くと数値項目は全て空白になる不具合を修正　→2025.02.05 やらない
     $select = "SELECT IF(SEARCHDT > '0000-00-00',DATE_FORMAT(SEARCHDT,'%Y/%m/%d'),''),ARTICLE,ADDRESS,STATION,IF(FOOT > 0,FOOT,''),";
     $select .= "IF(YEARS > 0,YEARS,''),IF(FLOOR > 0,FLOOR,''),IF(AREA > 0,AREA,''),SELLER,IF(PRICE > 0,PRICE,''),NOTE";
+
+    // Redmineの不具合修正内容を反映するとAPPRAISERの画面が真っ白になるのでコードを入れない
+    /*
+IF(FOOT > 0,FOOT,'')
+IF(YEARS > 0,YEARS,'')
+IF(FLOOR > 0,FLOOR,'')
+IF(AREA > 0,AREA,'')
+IF(PRICE > 0,PRICE,'')
+*/
     $from = " FROM TBLSELL";
     $where = " WHERE DEL = 1";
     $where .= " AND SELLNO = $sellNo";
@@ -122,6 +146,7 @@ function fnSqlSellUpdate($param)
 //
 // 売主物件情報登録
 //
+/*
 function fnSqlSellInsert($param)
 {
     $sql = "INSERT INTO TBLSELL(";
@@ -133,6 +158,20 @@ function fnSqlSellInsert($param)
         // 2025.01.31 新規登録時した後、売主物件一覧の検索結果に表示されない不具合を修正
         // . "CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)";
         . "CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1)";
+
+    return $sql;
+}
+*/
+
+function fnSqlSellInsert($param)
+{
+    $sql = "INSERT INTO TBLSELL(";
+    $sql .= "SELLNO,SEARCHDT,ARTICLE,ADDRESS,STATION,FOOT,YEARS,FLOOR,AREA,SELLER,PRICE,NOTE,INSDT,UPDT,DEL"; // ← 最後に DEL 追加
+    $sql .= ")VALUES(";
+    $sql .= "'" . $param["sellNo"] . "','" . $param["searchDT"] . "','" . $param["article"] . "','" . $param["address"] . "',"
+        . "'" . $param["station"] . "','" . $param["foot"] . "','" . $param["years"] . "','" . $param["floor"] . "',"
+        . "'" . $param["area"] . "','" . $param["seller"] . "','" . $param["price"] . "','" . $param["note"] . "',"
+        . "CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,1)"; // ← 最後に ,1 追加
 
     return $sql;
 }
