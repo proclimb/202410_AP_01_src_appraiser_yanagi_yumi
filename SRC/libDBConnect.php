@@ -3,13 +3,17 @@
 //
 // ログイン
 //
-function fnSqlLogin($id, $pw)
+// 2025.02.06 新規登録時に、パスワードをハッシュ化して登録している不具合を修正
+// function fnSqlLogin($id, $pw)
+function fnSqlLogin($id)
 {
     $id = addslashes($id);
-    $sql = "SELECT USERNO,AUTHORITY FROM TBLUSER";
+    // 2025.02.06 新規登録時に、パスワードをハッシュ化して登録している不具合を修正
+    // $sql = "SELECT USERNO,AUTHORITY FROM TBLUSER";
+    $sql = "SELECT USERNO,AUTHORITY,PASSWORD FROM TBLUSER";
     $sql .= " WHERE DEL = 1";
     $sql .= " AND ID = '$id'";
-    $sql .= " AND PASSWORD = '$pw'";
+    // $sql .= " AND PASSWORD = '$pw'";
 
     return ($sql);
 }
@@ -42,11 +46,20 @@ function fnSqlAdminUserEdit($userNo)
 //
 function fnSqlAdminUserUpdate($userNo, $name, $id, $password, $authority)
 {
-    $pass = addslashes(hash('adler32', $password));
+    // 2025.02.06 更新時に、パスワードをハッシュ化して更新している
+    if ($password !== "") {
+        // $pass = addslashes(hash('adler32', $password));
+        $pass = password_hash($password, PASSWORD_DEFAULT);
+    }
     $sql = "UPDATE TBLUSER";
     $sql .= " SET NAME = '$name'";
     $sql .= ",ID = '$id'";
-    $sql .= ",PASSWORD = '$pass'";
+
+    // 2025.02.06 更新時に、パスワードをハッシュ化して更新している
+    if ($password !== "") {
+        $sql .= ",PASSWORD = '$pass'";
+    }
+
     $sql .= ",AUTHORITY = '$authority'";
     $sql .= ",UPDT = CURRENT_TIMESTAMP";
     $sql .= " WHERE USERNO = '$userNo'";
@@ -59,7 +72,10 @@ function fnSqlAdminUserUpdate($userNo, $name, $id, $password, $authority)
 //
 function fnSqlAdminUserInsert($userNo, $name, $id, $password, $authority)
 {
-    $pass = addslashes(hash('adler32', $password));
+    // 2025.02.06 新規登録時に、パスワードをハッシュ化して登録している不具合を修正
+    // $pass = addslashes(hash('adler32', $password));
+    $pass = password_hash($password, PASSWORD_DEFAULT);
+
     $sql = "INSERT INTO TBLUSER(";
     $sql .= "USERNO,NAME,ID,PASSWORD,AUTHORITY,INSDT,UPDT,DEL";
     $sql .= ")VALUES(";

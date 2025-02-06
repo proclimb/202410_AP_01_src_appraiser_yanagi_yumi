@@ -189,13 +189,20 @@ function subFTitleDelete()
             // $result = mysqil_query($conn, $sql);
             $result = mysqli_query($conn, $sql);
         }
+
+        // 2025.02.06 項目名管理更新画面で削除ボタンを押下すると項目名管理画面に遷移せずにタイトル管理画面に遷移してしまう不具合を修正
+        $_REQUEST['act'] = 'fTitleSearch'; // ← 追加
+        subFTitle(); // ← 追加
+
     } else {
         $sql = fnSqlFTitleDelete($DocNo);
         $res = mysqli_query($conn, $sql);
+        // 2025.02.06 項目名管理更新画面で削除ボタンを押下すると項目名管理画面に遷移せずにタイトル管理画面に遷移してしまう不具合を修正
+        subTitlePage1();  // ← 追加
     }
-
-    $_REQUEST['act'] = 'fTitleSearch';
-    subFTitle();
+    // 2025.02.06 項目名管理更新画面で削除ボタンを押下すると項目名管理画面に遷移せずにタイトル管理画面に遷移してしまう不具合を修正
+    // $_REQUEST['act'] = 'fTitleSearch';
+    // subFTitle();
 }
 
 //

@@ -48,7 +48,9 @@ function subLoginCheck()
 
 	$conn = fnDbConnect();
 
-	$sql = fnSqlLogin($id, $pw);
+	// 2025.02.06 新規登録時に、パスワードをハッシュ化して登録している不具合を修正
+	// $sql = fnSqlLogin($id, $pw);
+	$sql = fnSqlLogin($id);
 	//呼び出した後で値を表示(2024.01.08 add) SQLを作っただけ
 	var_dump($sql);
 
@@ -57,7 +59,9 @@ function subLoginCheck()
 	$row = mysqli_fetch_array($res);
 	// 実行した結果を配列$rowに入れる
 
-	if ($row[0]) {
+	// 2025.02.06 新規登録時に、パスワードをハッシュ化して登録している不具合を修正
+	// if ($row[0]) {
+	if ($row[0] && password_verify($pw, $row['PASSWORD'])) {
 		// ０：ユーザ番号　検索結果に存在する？
 		$_COOKIE['cUserNo']   = $row[0];
 		$_COOKIE['authority'] = $row[1];

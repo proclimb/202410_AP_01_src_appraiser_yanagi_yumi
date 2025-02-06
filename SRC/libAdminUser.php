@@ -8,6 +8,8 @@ function subAdminUser()
 
 	subMenu();
 ?>
+	<!-- 2025.02.06 削除する時の確認メッセージが表示されない不具合を修正 -->
+	<script type="text/javascript" src="./js/adminUser.js"></script>
 	<h1>ユーザー情報画面</h1>
 
 	<form name="form" id="form" action="index.php" method="post">
@@ -40,10 +42,18 @@ function subAdminUser()
 					<tr>
 						<td class="list_td<?php print $i; ?>"><a href="javascript:form.act.value='adminUserEdit';form.userNo.value=<?php print $userNo; ?>;form.submit();"><?php print $name; ?></a></td>
 						<td class="list_td<?php print $i; ?>"><?php print $id; ?></td>
-						<td class="list_td<?php print $i; ?>"><?php print $password; ?></td>
+
+						<!-- 2025.02.06 ユーザー情報画面や更新画面にパスワードが表示されている不具合を修正 -->
+						<!-- <td class="list_td<?php print $i; ?>"><?php print $password; ?></td> -->
+						<td class="list_td<?php print $i; ?>"></td>
+
 						<td class="list_td<?php print $i; ?>"><?php print fnAuthorityName($authority); ?></td>
 						<td class="list_td<?php print $i; ?>">
-							<a href="javascript:fnAdminUserDeleteCheck(<?php print $userNo; ?>,'<?php print $name; ?>');">削除</a>
+							<!-- 2025.02.06 adminユーザも削除が出来てしまう不具合を修正 -->
+							<!-- <a href="javascript:fnAdminUserDeleteCheck(<?php print $userNo; ?>,'<?php print $name; ?>');">削除</a> -->
+							<?php if ($userNo > 1) { ?>
+								<a href="javascript:fnAdminUserDeleteCheck(<?php print $userNo; ?>,'<?php print $name; ?>');">削除</a>
+							<?php } ?>
 						</td>
 					</tr>
 				<?php
@@ -101,11 +111,17 @@ function subAdminUserEdit()
 				<td><input type="text" name="name" value="<?php print $name; ?>" /></td>
 			</tr>
 			<tr>
-				<th>ID</th>
+				<!-- 2025.02.06 必須項目なのに、画面に「必須」の文字が表示されていない不具合を修正 -->
+				<!-- <th>ID</th> -->
+				<th>ID<span class="red">（必須）</span></th>
+
 				<td><input type="text" name="id" value="<?php print $id; ?>" /></td>
 			</tr>
 			<tr>
-				<th>PASS</th>
+				<!-- 2025.02.06 必須項目なのに、画面に「必須」の文字が表示されていない不具合を修正 -->
+				<!-- <th>PASS</th> -->
+				<th>PASS<span class="red">（必須）</span></th>
+
 				<td><input type="text" name="password" value="<?php print $password; ?>" /></td>
 			</tr>
 			<tr>

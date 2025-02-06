@@ -94,7 +94,11 @@ function fnSqlFManagerInsert($fMNo, $name, $room, $note, $del)
 function fnSqlFManagerDelete($fMNo)
 {
 	$sql  = "UPDATE TBLFM";
-	$sql .= " SET DEL = 0";
+
+	// 2025.02.06 削除ボタンを押下した時のDBに保存されるフラグの値が異なる不具合を修正
+	// $sql .= " SET DEL = 0";
+	$sql .= " SET DEL = -1";
+
 	$sql .= ",UPDT = CURRENT_TIMESTAMP";
 	$sql .= " WHERE FMNO = '$fMNo'";
 

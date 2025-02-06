@@ -51,7 +51,9 @@ function fnFManagerViewEditCheck() {
 	}
 
 	tmp = form.pdfFile.value;
-	if (!form.pdfNo.value && tmp.slice(-4) != '.pdf' && tmp.slice(-4) != '.PDF') {
+	// 2025.02.06 ファイルマネージャー書類更新時、PDFファイル以外を登録することができる不具合を修正
+	// if (!form.pdfNo.value && tmp.slice(-4) != '.pdf' && tmp.slice(-4) != '.PDF') {
+	if (tmp.slice(-4) != '.pdf' && tmp.slice(-4) != '.PDF') {
 		alert('PDFファイルを指定してください');
 		return;
 	}

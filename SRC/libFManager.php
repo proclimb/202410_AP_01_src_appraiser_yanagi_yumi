@@ -198,7 +198,9 @@ function subFManagerEdit()
 					</td>
 				</tr>
 				<tr>
-					<th>物件名</th>
+					<!-- 2025.02.06 物件名が必須項目なのに、「必須」の文字が表示されていない不具合を修正 -->
+					<!-- <th>物件名</th> -->
+					<th>物件名<span class="red">（必須）</span></th>
 					<td><input type="text" name="name" value="<?php print $name; ?>" /></td>
 				</tr>
 				<tr>
@@ -444,6 +446,9 @@ function subFManagerViewEdit()
 	$sRoom         = htmlspecialchars($_REQUEST['sRoom']);
 	$sNote         = htmlspecialchars($_REQUEST['sNote']);
 
+	// 2025.02.06 書類一覧の書類選択リストを選択した状態で、ファイルマネージャー登録・更新画面から戻ると選択リストが「すべて」に戻っている不具合を修正
+	$sClassNo = htmlspecialchars($_REQUEST['sClassNo']);
+
 	$orderBy = $_REQUEST['orderBy'];
 	$orderTo = $_REQUEST['orderTo'];
 	$sPage   = $_REQUEST['sPage'];
@@ -486,6 +491,9 @@ function subFManagerViewEdit()
 			<input type="hidden" name="fMNo" value="<?php print $fMNo; ?>" />
 			<input type="hidden" name="pdfNo" value="<?php print $pdfNo; ?>" />
 			<input type="hidden" name="docNo" value="<?php print $docNo; ?>" />
+
+			<!-- 2025.02.06 書類一覧の書類選択リストを選択した状態で、ファイルマネージャー登録・更新画面から戻ると選択リストが「すべて」に戻っている不具合を修正 -->
+			<input type="hidden" name="sClassNo" value="<?php print $sClassNo ?>" />
 
 			<table border="0" cellpadding="5" cellspacing="1">
 				<tr>
