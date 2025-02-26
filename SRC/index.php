@@ -63,7 +63,7 @@ if ($_COOKIE['cUserNo'] != '' && $_COOKIE['authority'] != '') {
     setcookie('cUserNo', $_COOKIE['cUserNo'], time() + 60 * 60 * 24 * 365);
     // 1年間保持します
     setcookie('authority', $_COOKIE['authority'], time() + 60 * 60 * 24 * 365);
-    // var_dump($_REQUEST['act']); 中身を確認したい
+    var_dump($_REQUEST['act']); //中身を確認したい
     if (! $_REQUEST['act']) {
         // 1. $_REQUEST['act']の中にstockが入っているので偽
         $_REQUEST['act'] = 'menu';

@@ -179,6 +179,7 @@ function subArticle()
 //
 function subArticleEdit()
 {
+	var_dump($_REQUEST['articleNo']);
 	$conn = fnDbConnect();
 
 	$sDel         = $_REQUEST['sDel'];
@@ -345,14 +346,14 @@ function subArticleEditComplete()
 		$sql = fnSqlArticleUpdate($articleNo, $article, $room, $keyPlace, $address, $articleNote, $keyBox, $drawing, $sellCharge, $del);
 		$res = mysqli_query($conn, $sql);
 	} else {
-		// 新規登録
-		$sql = fnSqlArticleInsert(fnNextNo('ARTICLE'), $article, $room, $keyPlace, $address, $articleNote, $keyBox, $drawing, $sellCharge, $del);
 
+		// 新規登録不具合　原因2 引数の位置が違う
+		//	$sql = fnSqlArticleInsert(fnNextNo('ARTICLE'), $article, $room, $keyPlace, $address, $articleNote, $keyBox, $drawing, $sellCharge, $del);
+
+		$sql = fnSqlArticleInsert(fnNextNo('ARTICLE'), $keyPlace, $article, $address, $keyBox, $articleNote, $drawing, $sellCharge, $room, $del);
 		$res = mysqli_query($conn, $sql);
-
 		/* $sql = fnSqlFManagerInsert(fnNextNo('FM'),$article,$room,$articleNote,$del);
 		   $res = mysqli_query($conn,$sql); */
-
 		// 2025.01.30 新規登録時、ファイルマネージャーに保存されていない不具合を修正
 		$sql = fnSqlFManagerInsert(fnNextNo('FM'), $article, $room, $articleNote, $del);
 		$res = mysqli_query($conn, $sql);

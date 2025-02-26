@@ -34,11 +34,12 @@ function fnYMDCheck(msg, obj) {
  * @return true:異常、false:正常
  */
 function isLength(length, msg, obj) {
-	rtn = false;
 	if (obj.value.length > length) {
 		alert(msg + "は" + length + "文字以内で入力して下さい");
 		//2025.01.29 入力桁数が上限値以上でも入力チェックが機能しない不具合を修正
 		rtn = true;
+	} else {
+		rtn = false;
 	}
 	return rtn;
 }
